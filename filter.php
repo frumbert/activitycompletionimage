@@ -79,7 +79,14 @@ class filter_activitycompletionimage extends moodle_text_filter {
             }
             $foundLinks = array_keys(self::$activitylist);
             $dom = new DOMDocument();
-            $dom->loadHTML($text, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            if (extension_loaded('mb_string')) {
+                $encoding = '';
+                $text  = mb_convert_encoding($text , 'HTML-ENTITIES', 'UTF-8'); // require mb_string
+            } else {
+                $encoding = '<?xml encoding="UTF-8">';
+            }
+
+            $dom->loadHTML($encoding . $text, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $hrefs = $dom->getElementsByTagName("a");
             foreach ($hrefs as $href) {
                 if (!array_key_exists($href->getAttribute("href"), self::$activitylist)) continue;
