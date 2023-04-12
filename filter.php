@@ -79,7 +79,7 @@ class filter_activitycompletionimage extends moodle_text_filter {
             }
             $foundLinks = array_keys(self::$activitylist);
             $dom = new DOMDocument();
-            if (extension_loaded('mb_string')) {
+            if (extension_loaded('mbstring')) {
                 $encoding = '';
                 $text  = mb_convert_encoding($text , 'HTML-ENTITIES', 'UTF-8'); // require mb_string
             } else {
