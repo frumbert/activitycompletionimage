@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,11 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace filter_activitycompletionimage;
 defined('MOODLE_INTERNAL') || die();
 
 require_once("{$CFG->libdir}/completionlib.php");
 
-class filter_activitycompletionimage extends moodle_text_filter {
+class text_filter extends \core_filters\text_filter {
+  
     // Simple cache keyed on course and user.
     private static $activitylist = null;
     private static $cachedcourseid;
@@ -67,7 +68,7 @@ class filter_activitycompletionimage extends moodle_text_filter {
         if (is_null(self::$activitylist)) {
             self::$activitylist = [];
             $modinfo = get_fast_modinfo($courseid);
-            $completioninfo = new completion_info($COURSE);
+            $completioninfo = new \completion_info($COURSE);
             if (!empty($modinfo->cms)) {
                 foreach ($modinfo->cms as $cm) {
                     if ($cm->visible && $cm->has_view()) {
@@ -85,7 +86,7 @@ class filter_activitycompletionimage extends moodle_text_filter {
         }
 
         libxml_use_internal_errors(true);
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
 
         // Convert to HTML entities for DOM parsing (PHP 8.4 compatible).
         $text = mb_convert_encoding($text, 'UTF-8', 'auto');
