@@ -87,12 +87,8 @@ class text_filter extends \core_filters\text_filter {
 
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-
-        // Convert to HTML entities for DOM parsing (PHP 8.4 compatible).
-        $text = mb_convert_encoding($text, 'UTF-8', 'auto');
-        // $text = htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8', false);
-
-        $dom->loadHTML($text, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>' . $text . '</body></html>';
+        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
         $hrefs = $dom->getElementsByTagName("a");
@@ -132,6 +128,17 @@ class text_filter extends \core_filters\text_filter {
                 }
             }
         }
-        return $dom->saveHTML();
+        // Extract only the body content, not the full HTML document
+        $body = $dom->getElementsByTagName('body')->item(0);
+        if ($body) {
+            $output = '';
+            foreach ($body->childNodes as $child) {
+                $output .= $dom->saveHTML($child);
+            }
+            return $output;
+        }
+        
+        // Fallback if no body found
+        return $text;
     }
 }
